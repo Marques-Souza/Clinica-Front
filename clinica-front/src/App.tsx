@@ -3,6 +3,7 @@ import Login from './pages/Login'
 import Home from './pages/Home'
 import Register from './pages/Register'
 import PrivateRoute from './components/PrivateRoute'
+import CompleteProfile from './pages/CompleteProfile'
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route element={<PrivateRoute />}>
         <Route path="/home" element={<Home />} />
+        <Route path="/perfil/completar" element={<CompleteProfile />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" />} />
         
