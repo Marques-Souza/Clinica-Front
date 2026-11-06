@@ -1,6 +1,7 @@
 import {useState, type FormEvent} from 'react'
 import api from '../services/api'
 import { Link, useNavigate } from 'react-router-dom'
+import { getPerfil } from '../services/auth'
 
 function Login(){
   const [email, setEmail] = useState('')
@@ -18,7 +19,16 @@ function Login(){
     try{
       const response = await api.post('/auth', {email, password})
       localStorage.setItem('token', response.data.token)
-      navigate('/home')
+      if (getPerfil()?.includes('USER')) {
+  try {
+    await api.get('/clients/me')
+    navigate('/home')
+  } catch {
+    navigate('/perfil/completar')
+  }
+} else {
+  navigate('/home')
+}
 
     }catch{
       setError('E-mail ou senha inválidos')
