@@ -41,11 +41,11 @@ function Login(){
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow p-8">
         <div className="flex items-center gap-2 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-teal-700 flex items-center justify-center text-white text-2xl font-bold">
+        <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white text-2xl font-bold">
           +
         </div>
         <span className="text-xl font-bold">
-          Clínica<span className="text-teal-700">Vida</span>
+          Clínica
         </span>
       </div>
     
@@ -79,7 +79,7 @@ function Login(){
     <button 
       type="submit"
       disabled={loading}
-      className="w-full h-12 rounded-xl bg-teal-700 text-white font-semibold disabled:opacity-60 "
+      className="w-full h-12 rounded-xl bg-brand text-white font-semibold disabled:opacity-60 "
     >
       {loading ? 'Entrando...' : 'Entrar'}
     </button>
@@ -87,7 +87,7 @@ function Login(){
 
     <p className="text-center text-slate-500 mt-6">
       Ainda não tem conta?{' '}
-      <Link to="/register" className="text-teal-700 font-semibold">Criar conta</Link>
+      <Link to="/register" className="text-brand font-semibold">Criar conta</Link>
     </p>
   </div>
   </div>

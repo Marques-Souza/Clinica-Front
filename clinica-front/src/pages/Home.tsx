@@ -40,7 +40,7 @@ function Home() {
       <p className="text-slate-600">Bem-vindo de volta</p>
       <h1 className="text-3xl font-bold mb-6">Olá!</h1>
 
-      <section className="bg-teal-700 text-white rounded-2xl p-6 mb-4">
+      <section className="bg-brand text-white rounded-2xl p-6 mb-4">
         <p className="text-sm font-semibold tracking-wide">PRÓXIMA CONSULTA</p>
         {loading && <p className="mt-2">Carregando...</p>}
         {!loading && !next && (
@@ -63,7 +63,7 @@ function Home() {
 
       <Link
         to="/consultas/nova"
-        className="flex items-center justify-center h-12 rounded-xl bg-teal-700 text-white font-semibold mb-8"
+        className="flex items-center justify-center h-12 rounded-xl bg-brand text-white font-semibold mb-8"
       >
         Agendar consulta
       </Link>

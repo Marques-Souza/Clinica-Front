@@ -77,7 +77,7 @@ function NewAppointment() {
       <div className="max-w-md bg-white rounded-2xl shadow p-8">
         <h1 className="text-2xl font-bold mb-4">Consulta agendada!</h1>
         <p className="text-slate-600">Código da consulta</p>
-        <p className="text-xl font-bold text-teal-700 mb-4">{created.appointmentCode}</p>
+        <p className="text-xl font-bold text-brand mb-4">{created.appointmentCode}</p>
         <p className="text-slate-600">Médico</p>
         <p className="font-semibold mb-4">{created.doctor.fullName}</p>
         <p className="text-slate-600">Valor</p>
@@ -86,7 +86,7 @@ function NewAppointment() {
         </p>
         <button
           onClick={() => setCreated(null)}
-          className="w-full h-12 rounded-xl bg-teal-700 text-white font-semibold"
+          className="w-full h-12 rounded-xl bg-brand text-white font-semibold"
         >
           Agendar outra
         </button>
@@ -108,7 +108,7 @@ function NewAppointment() {
               onClick={() => setSpecialty(s.value)}
               className={`h-24 rounded-2xl border-2 font-semibold ${
                 specialty === s.value
-                  ? 'border-teal-700 bg-teal-50'
+                  ? 'border-brand bg-mint'
                   : 'border-slate-200 bg-white'
               }`}
             >
@@ -153,7 +153,7 @@ function NewAppointment() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-12 rounded-xl bg-teal-700 text-white font-semibold disabled:opacity-60"
+          className="w-full h-12 rounded-xl bg-brand text-white font-semibold disabled:opacity-60"
         >
           {loading ? 'Agendando...' : 'Agendar consulta'}
         </button>

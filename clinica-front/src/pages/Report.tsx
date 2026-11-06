@@ -37,7 +37,7 @@ function Report() {
       <button
         onClick={handleDownload}
         disabled={loading}
-        className="h-12 px-6 rounded-xl bg-teal-700 text-white font-semibold disabled:opacity-60"
+        className="h-12 px-6 rounded-xl bg-brand text-white font-semibold disabled:opacity-60"
       >
         {loading ? 'Gerando...' : 'Baixar relatório em PDF'}
       </button>

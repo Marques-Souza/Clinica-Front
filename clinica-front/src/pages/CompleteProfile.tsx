@@ -71,7 +71,7 @@ function CompleteProfile() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-xl bg-teal-700 text-white font-semibold disabled:opacity-60"
+            className="w-full h-12 rounded-xl bg-brand text-white font-semibold disabled:opacity-60"
           >
             {loading ? 'Salvando...' : 'Salvar perfil'}
           </button>

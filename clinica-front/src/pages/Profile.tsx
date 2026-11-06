@@ -92,7 +92,7 @@ function Profile() {
           {error && <p className="text-red-600 text-sm mt-4">{error}</p>}
           <button
             onClick={startEditing}
-            className="mt-6 h-12 px-6 rounded-xl bg-teal-700 text-white font-semibold"
+            className="mt-6 h-12 px-6 rounded-xl bg-brand text-white font-semibold"
           >
             Editar
           </button>
@@ -117,7 +117,7 @@ function Profile() {
             <button
               type="submit"
               disabled={saving}
-              className="h-12 px-6 rounded-xl bg-teal-700 text-white font-semibold disabled:opacity-60"
+              className="h-12 px-6 rounded-xl bg-brand text-white font-semibold disabled:opacity-60"
             >
               {saving ? 'Salvando...' : 'Salvar'}
             </button>

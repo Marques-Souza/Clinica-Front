@@ -127,7 +127,7 @@ async function handleReschedule(id: string) {
                       setReschedulingId(reschedulingId === a.id ? null : a.id)
                       setNewDate('')
                     }}
-                    className="h-11 px-4 rounded-xl border border-teal-700 text-teal-700 font-semibold"
+                    className="h-11 px-4 rounded-xl border border-brand text-brand font-semibold"
                   >
                     Remarcar
                   </button>
@@ -150,7 +150,7 @@ async function handleReschedule(id: string) {
                     />
                     <button
                       onClick={() => handleReschedule(a.id)}
-                      className="h-12 px-5 rounded-xl bg-teal-700 text-white font-semibold"
+                      className="h-12 px-5 rounded-xl bg-brand text-white font-semibold"
                     >
                       Confirmar nova data
                     </button>
