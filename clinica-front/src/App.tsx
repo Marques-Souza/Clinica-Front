@@ -8,6 +8,7 @@ import Layout from './components/Layout'
 import NewAppointment from './pages/NewAppointment'
 import MyAppointments from './pages/MyAppointments'
 import Profile from './pages/Profile'
+import Report from './pages/Report'
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/perfil/completar" element={<CompleteProfile />} />
         <Route path="/consultas/nova" element={<NewAppointment />} />
         <Route path="/consultas" element={<MyAppointments />} />
+        <Route path="/relatorio" element={<Report />} />
         
         </Route>
         </Route>
