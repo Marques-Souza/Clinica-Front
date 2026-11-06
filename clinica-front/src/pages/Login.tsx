@@ -1,8 +1,31 @@
-import {useState} from 'react'
+import {useState, type FormEvent} from 'react'
+import api from '../services/api'
+import { useNavigate } from 'react-router-dom'
 
 function Login(){
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+
+  async function handlerSubmit(e: FormEvent){
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try{
+      const response = await api.post('/auth', {email, password})
+      localStorage.setItem('token', response.data.token)
+      navigate('/home')
+
+    }catch{
+      setError('E-mail ou senha inválidos')
+    }finally{
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
@@ -20,6 +43,7 @@ function Login(){
     <h1 className="text-3xl font-bold mb-1">Entrar</h1>
     <p className="text-slate-600 mb-6">Acesse sua conta para agendar consultas.</p>
 
+    <form onSubmit={handlerSubmit}>
     <label htmlFor="email" className="block text-sm font-semibold mb-1">E-mail</label>
     <input
       id="email"
@@ -38,9 +62,18 @@ function Login(){
       placeholder="Digite sua senha"
       className="w-full h-12 rounded-xl border border-slate-300 px-4 mb-4"/>
 
-    <button className="w-full h-12 rounded-xl bg-teal-700 text-white font-semibold ">
+    {error && (
+      <p className="text-red-500 text-sm mb-4">{error}</p>
+    )}
+
+    <button 
+      type="submit"
+      disabled={loading}
+      className="w-full h-12 rounded-xl bg-teal-700 text-white font-semibold "
+    >
       Entrar
     </button>
+    </form>
 
     <p className="text-center text-slate-500 mt-6">
       Ainda não te conta?{' '}
