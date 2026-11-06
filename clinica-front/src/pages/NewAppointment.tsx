@@ -38,6 +38,8 @@ function NewAppointment() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [created, setCreated] = useState<Appointment | null>(null)
+  const fieldClass =
+    'w-full rounded-xl border border-brand/20 bg-mint/60 px-4 text-brand-dark accent-brand [color-scheme:light] placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20'
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -96,20 +98,25 @@ function NewAppointment() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6">Nova consulta</h1>
+      <div className="mb-6">
+        <p className="mb-1 text-sm font-semibold uppercase tracking-widest text-brand">Agendamento</p>
+        <h1 className="text-3xl font-bold text-brand-dark">Nova consulta</h1>
+        <p className="mt-2 text-slate-600">Escolha a especialidade, data e horário para sua consulta.</p>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <h2 className="font-bold mb-3">Especialidade</h2>
+      <form onSubmit={handleSubmit} className="rounded-2xl border border-brand/10 bg-white p-5 shadow-sm sm:p-8">
+        <h2 className="mb-1 font-bold text-brand-dark">Especialidade</h2>
+        <p className="mb-4 text-sm text-slate-500">Selecione o tipo de atendimento.</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
           {specialties.map((s) => (
             <button
               key={s.value}
               type="button"
               onClick={() => setSpecialty(s.value)}
-              className={`h-24 rounded-2xl border-2 font-semibold ${
+              className={`h-24 rounded-2xl border font-semibold transition-colors ${
                 specialty === s.value
-                  ? 'border-brand bg-mint'
-                  : 'border-slate-200 bg-white'
+                  ? 'border-brand bg-brand text-white shadow-sm'
+                  : 'border-brand/15 bg-mint/50 text-brand-dark hover:border-brand/40 hover:bg-mint'
               }`}
             >
               {s.label}
@@ -117,35 +124,35 @@ function NewAppointment() {
           ))}
         </div>
 
-        <label htmlFor="scheduledAt" className="block font-bold mb-1">Data e hora</label>
+        <label htmlFor="scheduledAt" className="mb-2 block font-semibold text-brand-dark">Data e hora</label>
         <input
           id="scheduledAt"
           type="datetime-local"
           value={scheduledAt}
           onChange={(e) => setScheduledAt(e.target.value)}
-          className="w-full h-12 rounded-xl border border-slate-300 px-4 mb-6 bg-white"
+          className={`${fieldClass} mb-6 h-12`}
         />
 
-        <label htmlFor="payment" className="block font-bold mb-1">Forma de pagamento</label>
+        <label htmlFor="payment" className="mb-2 block font-semibold text-brand-dark">Forma de pagamento</label>
         <select
           id="payment"
           value={paymentMethod}
           onChange={(e) => setPaymentMethod(e.target.value)}
-          className="w-full h-12 rounded-xl border border-slate-300 px-4 mb-6 bg-white"
+          className={`${fieldClass} mb-6 h-12`}
         >
           {payments.map((p) => (
             <option key={p.value} value={p.value}>{p.label}</option>
           ))}
         </select>
 
-        <label htmlFor="reason" className="block font-bold mb-1">Motivo (opcional)</label>
+        <label htmlFor="reason" className="mb-2 block font-semibold text-brand-dark">Motivo (opcional)</label>
         <textarea
           id="reason"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           maxLength={500}
           rows={3}
-          className="w-full rounded-xl border border-slate-300 p-4 mb-6 bg-white"
+          className={`${fieldClass} mb-6 p-4`}
         />
 
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}

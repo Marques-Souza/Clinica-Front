@@ -9,6 +9,7 @@ import NewAppointment from './pages/NewAppointment'
 import MyAppointments from './pages/MyAppointments'
 import Profile from './pages/Profile'
 import Report from './pages/Report'
+import SearchAppointment from './pages/SearchAppointment'
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/consultas/nova" element={<NewAppointment />} />
         <Route path="/consultas" element={<MyAppointments />} />
         <Route path="/relatorio" element={<Report />} />
+        <Route path="/consultas/buscar" element={<SearchAppointment />} />
         
         </Route>
         </Route>
