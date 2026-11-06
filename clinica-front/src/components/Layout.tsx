@@ -25,6 +25,7 @@ function Layout() {
         </div>
         <nav className="max-w-5xl mx-auto px-6 pb-3 flex gap-2 overflow-x-auto">
           <NavLink to="/home" className={link}>Início</NavLink>
+          <NavLink to="/consultas/nova" className={link}>Agendar consulta</NavLink>
         </nav>
       </header>
 
