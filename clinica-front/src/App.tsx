@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Register from './pages/Register'
 import PrivateRoute from './components/PrivateRoute'
 import CompleteProfile from './pages/CompleteProfile'
+import Layout from './components/Layout'
 
 
 function App() {
@@ -13,8 +14,10 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route element={<PrivateRoute />}>
+        <Route element={<Layout />}>
         <Route path="/home" element={<Home />} />
         <Route path="/perfil/completar" element={<CompleteProfile />} />
+        </Route>
         </Route>
         <Route path="*" element={<Navigate to="/login" />} />
         
