@@ -39,6 +39,8 @@ function MyAppointments() {
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [reschedulingId, setReschedulingId] = useState<string | null>(null)
+  const [newDate, setNewDate] = useState('')
 
   async function handleCancel(id: string) {
   if (!window.confirm('Deseja realmente cancelar esta consulta?')) return
@@ -53,6 +55,24 @@ function MyAppointments() {
     setCancellingId(null)
   }
 }
+
+async function handleReschedule(id: string) {
+    if (!newDate) {
+      setError('Escolha a nova data e hora')
+      return
+    }
+    setError('')
+    try {
+      // "2026-11-10T14:30" -> "2026-11-10 14:30:00"
+      const scheduledAt = newDate.replace('T', ' ') + ':00'
+      const response = await api.put(`/appointments/${id}`, { scheduledAt })
+      setAppointments((list) => list.map((a) => (a.id === id ? response.data : a)))
+      setReschedulingId(null)
+      setNewDate('')
+    } catch {
+      setError('Não foi possível remarcar. A data precisa ser no futuro.')
+    }
+  }
 
   useEffect(() => {
     setLoading(true)
@@ -99,15 +119,47 @@ function MyAppointments() {
                 {paymentInfo[a.paymentStatus].label}
               </span>
             </div>
-            {a.status === 'SCHEDULED' && (
-  <button
-    onClick={() => handleCancel(a.id)}
-    disabled={cancellingId === a.id}
-    className="mt-4 h-11 px-4 rounded-xl border border-red-300 text-red-700 font-semibold disabled:opacity-60"
-  >
-    {cancellingId === a.id ? 'Cancelando...' : 'Cancelar consulta'}
-  </button>
-)}
+                       {a.status === 'SCHEDULED' && (
+              <div className="mt-4">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setReschedulingId(reschedulingId === a.id ? null : a.id)
+                      setNewDate('')
+                    }}
+                    className="h-11 px-4 rounded-xl border border-teal-700 text-teal-700 font-semibold"
+                  >
+                    Remarcar
+                  </button>
+                  <button
+                    onClick={() => handleCancel(a.id)}
+                    disabled={cancellingId === a.id}
+                    className="h-11 px-4 rounded-xl border border-red-300 text-red-700 font-semibold disabled:opacity-60"
+                  >
+                    {cancellingId === a.id ? 'Cancelando...' : 'Cancelar consulta'}
+                  </button>
+                </div>
+
+                {reschedulingId === a.id && (
+                  <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="datetime-local"
+                      value={newDate}
+                      onChange={(e) => setNewDate(e.target.value)}
+                      className="h-12 rounded-xl border border-slate-300 px-4 bg-white"
+                    />
+                    <button
+                      onClick={() => handleReschedule(a.id)}
+                      className="h-12 px-5 rounded-xl bg-teal-700 text-white font-semibold"
+                    >
+                      Confirmar nova data
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+
           </article>
         ))}
       </div>
