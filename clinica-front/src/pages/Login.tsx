@@ -1,6 +1,6 @@
 import {useState, type FormEvent} from 'react'
 import api from '../services/api'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 function Login(){
   const [email, setEmail] = useState('')
@@ -53,7 +53,7 @@ function Login(){
       placeholder="Digite seu e-mail"
       className="w-full h-12 rounded-xl border border-slate-300 px-4 mb-4"/>
 
-    <label htmlFor="password" className="block text-sm font-semibold mb-1">password</label>
+    <label htmlFor="password" className="block text-sm font-semibold mb-1">senha</label>
     <input
       id="password"
       type="password"
@@ -69,15 +69,15 @@ function Login(){
     <button 
       type="submit"
       disabled={loading}
-      className="w-full h-12 rounded-xl bg-teal-700 text-white font-semibold "
+      className="w-full h-12 rounded-xl bg-teal-700 text-white font-semibold disabled:opacity-60 "
     >
-      Entrar
+      {loading ? 'Entrando...' : 'Entrar'}
     </button>
     </form>
 
     <p className="text-center text-slate-500 mt-6">
-      Ainda não te conta?{' '}
-      <a href="#" className="text-teal-700 font-semibold">Criar conta</a>
+      Ainda não tem conta?{' '}
+      <Link to="/register" className="text-teal-700 font-semibold">Criar conta</Link>
     </p>
   </div>
   </div>
