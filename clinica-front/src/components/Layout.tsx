@@ -27,6 +27,7 @@ function Layout() {
           <NavLink to="/home" className={link}>Início</NavLink>
           <NavLink to="/consultas/nova" className={link}>Agendar consulta</NavLink>
           <NavLink to="/consultas" className={link}>Minhas consultas</NavLink>
+          <NavLink to="/perfil" className={link}>Meu perfil</NavLink>
         </nav>
       </header>
 

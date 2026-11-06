@@ -7,6 +7,7 @@ import CompleteProfile from './pages/CompleteProfile'
 import Layout from './components/Layout'
 import NewAppointment from './pages/NewAppointment'
 import MyAppointments from './pages/MyAppointments'
+import Profile from './pages/Profile'
 
 
 function App() {
@@ -18,9 +19,11 @@ function App() {
         <Route element={<PrivateRoute />}>
         <Route element={<Layout />}>
         <Route path="/home" element={<Home />} />
+        <Route path="/perfil" element={<Profile />} />
         <Route path="/perfil/completar" element={<CompleteProfile />} />
          <Route path="/consultas/nova" element={<NewAppointment />} />
         <Route path="/consultas" element={<MyAppointments />} />
+        
         </Route>
         </Route>
         <Route path="*" element={<Navigate to="/login" />} />
