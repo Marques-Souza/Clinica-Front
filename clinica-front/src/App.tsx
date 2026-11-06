@@ -1,5 +1,6 @@
-import './services/api'
+import Login from './pages/Login'
+
 function App() {
-  return <h1 className="text-3xl font-bold text-teal-700">ClínicaVida</h1>
+  return <Login/>
 }
 export default App
