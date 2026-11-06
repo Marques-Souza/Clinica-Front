@@ -35,9 +35,24 @@ function formatDate(value: string) {
 function MyAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [page, setPage] = useState(0)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  async function handleCancel(id: string) {
+  if (!window.confirm('Deseja realmente cancelar esta consulta?')) return
+  setCancellingId(id)
+  setError('')
+  try {
+    const response = await api.put(`/appointments/${id}`, { status: 'CANCELLED' })
+    setAppointments((list) => list.map((a) => (a.id === id ? response.data : a)))
+  } catch {
+    setError('Não foi possível cancelar a consulta')
+  } finally {
+    setCancellingId(null)
+  }
+}
 
   useEffect(() => {
     setLoading(true)
@@ -84,6 +99,15 @@ function MyAppointments() {
                 {paymentInfo[a.paymentStatus].label}
               </span>
             </div>
+            {a.status === 'SCHEDULED' && (
+  <button
+    onClick={() => handleCancel(a.id)}
+    disabled={cancellingId === a.id}
+    className="mt-4 h-11 px-4 rounded-xl border border-red-300 text-red-700 font-semibold disabled:opacity-60"
+  >
+    {cancellingId === a.id ? 'Cancelando...' : 'Cancelar consulta'}
+  </button>
+)}
           </article>
         ))}
       </div>
