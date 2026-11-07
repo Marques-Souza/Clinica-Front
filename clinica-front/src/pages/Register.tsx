@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import api from '../services/api'
+import Card from '../components/Card'
 
 function Register() {
   const [email, setEmail] = useState('')
@@ -39,7 +40,7 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow p-8">
+      <Card className="w-full max-w-sm">
         <div className="flex items-center gap-2 mb-6">
           <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white text-2xl font-bold">
             +
@@ -49,56 +50,56 @@ function Register() {
           </span>
         </div>
 
-        <h1 className="text-3xl font-bold mb-1">Criar conta</h1>
-        <p className="text-slate-600 mb-6">Cadastre-se para agendar consultas.</p>
+        <h1 className="mb-1 text-3xl font-bold text-ink">Criar conta</h1>
+        <p className="mb-6 text-ink-soft">Cadastre-se para agendar consultas.</p>
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="email" className="block text-sm font-semibold mb-1">E-mail</label>
+        <form onSubmit={handleSubmit} className="text-ink">
+          <label htmlFor="email" className="mb-1 block text-sm font-semibold">E-mail</label>
           <input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="voce@email.com"
-            className="w-full h-12 rounded-xl border border-slate-300 px-4 mb-4"
+            className="mb-4 h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent"
           />
 
-          <label htmlFor="password" className="block text-sm font-semibold mb-1">Senha</label>
+          <label htmlFor="password" className="mb-1 block text-sm font-semibold">Senha</label>
           <input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="5 a 12 caracteres"
-            className="w-full h-12 rounded-xl border border-slate-300 px-4 mb-4"
+            className="mb-4 h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent"
           />
 
-          <label htmlFor="confirm" className="block text-sm font-semibold mb-1">Confirmar senha</label>
+          <label htmlFor="confirm" className="mb-1 block text-sm font-semibold">Confirmar senha</label>
           <input
             id="confirm"
             type="password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             placeholder="Repita a senha"
-            className="w-full h-12 rounded-xl border border-slate-300 px-4 mb-4"
+            className="mb-4 h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent"
           />
 
-          {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+          {error && <p className="mb-4 text-sm text-red-700">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-xl bg-brand text-white font-semibold disabled:opacity-60"
+            className="h-12 w-full rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
           >
             {loading ? 'Criando...' : 'Criar conta'}
           </button>
         </form>
 
-        <p className="text-center text-slate-600 mt-6">
+        <p className="mt-6 text-center text-ink-soft">
           Já tem conta?{' '}
           <Link to="/login" className="text-brand font-semibold">Entrar</Link>
         </p>
-      </div>
+      </Card>
     </div>
   )
 }

@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { isAxiosError } from 'axios'
 import api from '../services/api'
+import PageHeader from '../components/PageHeader'
+import Card from '../components/Card'
 
 const specialties = [
   { value: 'CARDIOLOGY', label: 'Cardiologia' },
@@ -39,7 +41,7 @@ function NewAppointment() {
   const [loading, setLoading] = useState(false)
   const [created, setCreated] = useState<Appointment | null>(null)
   const fieldClass =
-    'w-full rounded-xl border border-brand/20 bg-mint/60 px-4 text-brand-dark accent-brand [color-scheme:light] placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20'
+    'h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-ink accent-brand focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent'
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -76,95 +78,108 @@ function NewAppointment() {
 
   if (created) {
     return (
-      <div className="max-w-md bg-white rounded-2xl shadow p-8">
-        <h1 className="text-2xl font-bold mb-4">Consulta agendada!</h1>
-        <p className="text-slate-600">Código da consulta</p>
-        <p className="text-xl font-bold text-brand mb-4">{created.appointmentCode}</p>
-        <p className="text-slate-600">Médico</p>
-        <p className="font-semibold mb-4">{created.doctor.fullName}</p>
-        <p className="text-slate-600">Valor</p>
-        <p className="font-semibold mb-6">
-          {created.consultationFee.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-        </p>
-        <button
-          onClick={() => setCreated(null)}
-          className="w-full h-12 rounded-xl bg-brand text-white font-semibold"
-        >
-          Agendar outra
-        </button>
+      <div className="max-w-3xl space-y-6">
+        <PageHeader eyebrow="Agendamento" title="Consulta agendada!" />
+        <Card className="max-w-3xl">
+          <p className="text-ink-soft">Código da consulta</p>
+          <p className="mb-4 text-xl font-bold text-ink">{created.appointmentCode}</p>
+          <p className="text-ink-soft">Médico</p>
+          <p className="mb-4 font-semibold text-ink">{created.doctor.fullName}</p>
+          <p className="text-ink-soft">Valor</p>
+          <p className="mb-6 font-semibold text-ink">
+            {created.consultationFee.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+          </p>
+          <button
+            onClick={() => setCreated(null)}
+            className="h-12 w-full rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+          >
+            Agendar outra
+          </button>
+        </Card>
       </div>
     )
   }
 
   return (
-    <div className="max-w-2xl">
-      <div className="mb-6">
-        <p className="mb-1 text-sm font-semibold uppercase tracking-widest text-brand">Agendamento</p>
-        <h1 className="text-3xl font-bold text-brand-dark">Nova consulta</h1>
-        <p className="mt-2 text-slate-600">Escolha a especialidade, data e horário para sua consulta.</p>
-      </div>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader
+        eyebrow="Agendamento"
+        title="Nova consulta"
+        subtitle="Escolha a especialidade, data e horário para sua consulta."
+      />
 
-      <form onSubmit={handleSubmit} className="rounded-2xl border border-brand/10 bg-white p-5 shadow-sm sm:p-8">
-        <h2 className="mb-1 font-bold text-brand-dark">Especialidade</h2>
-        <p className="mb-4 text-sm text-slate-500">Selecione o tipo de atendimento.</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-          {specialties.map((s) => (
-            <button
-              key={s.value}
-              type="button"
-              onClick={() => setSpecialty(s.value)}
-              className={`h-24 rounded-2xl border font-semibold transition-colors ${
-                specialty === s.value
-                  ? 'border-brand bg-brand text-white shadow-sm'
-                  : 'border-brand/15 bg-mint/50 text-brand-dark hover:border-brand/40 hover:bg-mint'
-              }`}
+      <Card>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <fieldset>
+            <legend className="mb-1 text-sm font-semibold text-ink">Especialidade</legend>
+            <p className="mb-4 text-sm text-ink-soft">Selecione o tipo de atendimento.</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {specialties.map((s) => (
+                <button
+                  key={s.value}
+                  type="button"
+                  aria-pressed={specialty === s.value}
+                  onClick={() => setSpecialty(s.value)}
+                  className={`min-h-12 rounded-2xl border px-4 py-3 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                    specialty === s.value
+                      ? 'border-brand bg-mint text-ink'
+                      : 'border-brand/10 bg-linear-to-r from-mint to-white text-ink hover:border-accent'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <div>
+            <label htmlFor="scheduledAt" className="mb-1 block text-sm font-semibold text-ink">Data e hora</label>
+            <input
+              id="scheduledAt"
+              type="datetime-local"
+              value={scheduledAt}
+              onChange={(e) => setScheduledAt(e.target.value)}
+              className={fieldClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="payment" className="mb-1 block text-sm font-semibold text-ink">Forma de pagamento</label>
+            <select
+              id="payment"
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className={fieldClass}
             >
-              {s.label}
-            </button>
-          ))}
-        </div>
+              {payments.map((p) => (
+                <option key={p.value} value={p.value}>{p.label}</option>
+              ))}
+            </select>
+          </div>
 
-        <label htmlFor="scheduledAt" className="mb-2 block font-semibold text-brand-dark">Data e hora</label>
-        <input
-          id="scheduledAt"
-          type="datetime-local"
-          value={scheduledAt}
-          onChange={(e) => setScheduledAt(e.target.value)}
-          className={`${fieldClass} mb-6 h-12`}
-        />
+          <div>
+            <label htmlFor="reason" className="mb-1 block text-sm font-semibold text-ink">Motivo (opcional)</label>
+            <textarea
+              id="reason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              maxLength={500}
+              rows={3}
+              className={`${fieldClass} h-auto min-h-28 py-3`}
+            />
+          </div>
 
-        <label htmlFor="payment" className="mb-2 block font-semibold text-brand-dark">Forma de pagamento</label>
-        <select
-          id="payment"
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-          className={`${fieldClass} mb-6 h-12`}
-        >
-          {payments.map((p) => (
-            <option key={p.value} value={p.value}>{p.label}</option>
-          ))}
-        </select>
+          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
 
-        <label htmlFor="reason" className="mb-2 block font-semibold text-brand-dark">Motivo (opcional)</label>
-        <textarea
-          id="reason"
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          maxLength={500}
-          rows={3}
-          className={`${fieldClass} mb-6 p-4`}
-        />
-
-        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full h-12 rounded-xl bg-brand text-white font-semibold disabled:opacity-60"
-        >
-          {loading ? 'Agendando...' : 'Agendar consulta'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="h-12 w-full rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-60"
+          >
+            {loading ? 'Agendando...' : 'Agendar consulta'}
+          </button>
+        </form>
+      </Card>
     </div>
   )
 }

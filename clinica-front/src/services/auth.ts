@@ -8,3 +8,7 @@ export function getPerfil(): string | null {
     return null
   }
 }
+
+export function hasPerfil(perfil: string): boolean {
+  return getPerfil()?.includes(perfil) ?? false
+}

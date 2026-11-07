@@ -1,8 +1,11 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { hasPerfil } from '../services/auth'
 
-function PrivateRoute() {
+function PrivateRoute({ perfil }: { perfil?: string }) {
   const token = localStorage.getItem('token')
-  return token ? <Outlet /> : <Navigate to="/login" replace />
+  if (!token) return <Navigate to="/login" replace />
+  if (perfil && !hasPerfil(perfil)) return <Navigate to="/home" replace />
+  return <Outlet />
 }
 
 export default PrivateRoute

@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
-import Home from './pages/Home'
 import Register from './pages/Register'
 import PrivateRoute from './components/PrivateRoute'
 import CompleteProfile from './pages/CompleteProfile'
@@ -10,6 +9,10 @@ import MyAppointments from './pages/MyAppointments'
 import Profile from './pages/Profile'
 import Report from './pages/Report'
 import SearchAppointment from './pages/SearchAppointment'
+import DoctorProfile from './pages/DoctorProfile'
+import CreateDoctor from './pages/CreateDoctor'
+import HomeSwitch from './pages/HomeSwitch'
+import AdminSpecialties from './pages/AdminSpecialties'
 
 
 function App() {
@@ -19,20 +22,27 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route element={<PrivateRoute />}>
-        <Route element={<Layout />}>
-        <Route path="/home" element={<Home />} />
-        <Route path="/perfil" element={<Profile />} />
-        <Route path="/perfil/completar" element={<CompleteProfile />} />
-        <Route path="/consultas/nova" element={<NewAppointment />} />
-        <Route path="/consultas" element={<MyAppointments />} />
-        <Route path="/relatorio" element={<Report />} />
-        <Route path="/consultas/buscar" element={<SearchAppointment />} />
-        
-        </Route>
+          <Route element={<Layout />}>
+            <Route path="/home" element={<HomeSwitch />} />
+            <Route element={<PrivateRoute perfil="USER" />}>
+              <Route path="/perfil" element={<Profile />} />
+              <Route path="/perfil/completar" element={<CompleteProfile />} />
+              <Route path="/consultas/nova" element={<NewAppointment />} />
+              <Route path="/consultas" element={<MyAppointments />} />
+              <Route path="/consultas/buscar" element={<SearchAppointment />} />
+              <Route path="/relatorio" element={<Report />} />
+            </Route>
+
+            <Route element={<PrivateRoute perfil="DOCTOR" />}>
+  <Route path="/medico/perfil" element={<DoctorProfile />} />
+</Route>
+<Route element={<PrivateRoute perfil="ADMIN" />}>
+  <Route path="/admin/medicos/novo" element={<CreateDoctor />} />
+  <Route path="/admin/especialidades" element={<AdminSpecialties />} />
+</Route>
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/login" />} />
-       
-        
       </Routes>
     </BrowserRouter>
   )

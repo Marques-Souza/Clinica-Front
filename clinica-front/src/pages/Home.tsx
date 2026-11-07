@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../services/api'
+import PageHeader from '../components/PageHeader'
+import Card from '../components/Card'
+import { hasPerfil } from '../services/auth'
 
 type Appointment = {
   id: string
@@ -19,7 +22,13 @@ function Home() {
   const [next, setNext] = useState<Appointment | null>(null)
   const [loading, setLoading] = useState(true)
 
+
+
   useEffect(() => {
+    if (!hasPerfil('USER')) {
+  setLoading(false)
+  return
+}
     api
       .get('/appointments', { params: { page: 0, size: 50 } })
       .then((response) => {
@@ -32,15 +41,36 @@ function Home() {
       .finally(() => setLoading(false))
   }, [])
 
-  const shortcut =
-    'bg-white rounded-2xl border border-slate-200 p-5 font-semibold min-h-11'
+  if (!hasPerfil('USER')) {
+  return (
+    <div className="max-w-3xl space-y-6">
+      <PageHeader eyebrow="Início" title="Olá!" subtitle="Bem-vindo ao sistema." />
+
+      {hasPerfil('ADMIN') && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link
+            to="/admin/medicos/novo"
+            className="rounded-2xl border border-slate-200 bg-white p-5 font-semibold text-ink hover:border-brand hover:shadow-md transition"
+          >
+            Criar médico
+          </Link>
+          <Link
+            to="/admin/especialidades"
+            className="rounded-2xl border border-slate-200 bg-white p-5 font-semibold text-ink hover:border-brand hover:shadow-md transition"
+          >
+            Especialidades
+          </Link>
+        </div>
+      )}
+    </div>
+  )
+}
 
   return (
-    <div className="max-w-3xl">
-      <p className="text-slate-600">Bem-vindo de volta</p>
-      <h1 className="text-3xl font-bold mb-6">Olá!</h1>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader eyebrow="Início" title="Olá!" subtitle="Bem-vindo de volta" />
 
-      <section className="bg-brand text-white rounded-2xl p-6 mb-4">
+      <Card variant="brand" className="text-white">
         <p className="text-sm font-semibold tracking-wide">PRÓXIMA CONSULTA</p>
         {loading && <p className="mt-2">Carregando...</p>}
         {!loading && !next && (
@@ -59,19 +89,29 @@ function Home() {
             </p>
           </>
         )}
-      </section>
+      </Card>
 
       <Link
         to="/consultas/nova"
-        className="flex items-center justify-center h-12 rounded-xl bg-brand text-white font-semibold mb-8"
+        className="flex h-12 items-center justify-center rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
       >
         Agendar consulta
       </Link>
 
-      <h2 className="font-bold mb-3">Atalhos</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <Link to="/consultas" className={shortcut}>Minhas consultas</Link>
-        <Link to="/perfil" className={shortcut}>Meu perfil</Link>
+      <div className="space-y-3">
+        <h2 className="font-bold text-ink">Atalhos</h2>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Card compact className="min-h-16 transition hover:border-brand hover:shadow-md">
+            <Link to="/consultas" className="flex min-h-16 items-center rounded-2xl p-5 font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+              Minhas consultas
+            </Link>
+          </Card>
+          <Card compact className="min-h-16 transition hover:border-brand hover:shadow-md">
+            <Link to="/perfil" className="flex min-h-16 items-center rounded-2xl p-5 font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+              Meu perfil
+            </Link>
+          </Card>
+        </div>
       </div>
     </div>
   )

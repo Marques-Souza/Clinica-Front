@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../services/api'
+import PageHeader from '../components/PageHeader'
+import Card from '../components/Card'
 
 type Appointment = {
   id: string
@@ -88,31 +90,31 @@ async function handleReschedule(id: string) {
   }, [page])
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6">Minhas consultas</h1>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader eyebrow="Consultas" title="Minhas consultas" />
 
-      {loading && <p className="text-slate-600">Carregando...</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-ink-soft">Carregando...</p>}
+      {error && <p role="alert" className="text-red-700">{error}</p>}
 
       {!loading && !error && appointments.length === 0 && (
-        <p className="text-slate-600">Você ainda não tem consultas agendadas.</p>
+        <Card><p className="text-ink-soft">Você ainda não tem consultas agendadas.</p></Card>
       )}
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-6">
         {appointments.map((a) => (
-          <article key={a.id} className="bg-white rounded-2xl border border-slate-200 p-5">
+          <Card key={a.id}>
             <div className="flex items-center justify-between gap-2 mb-1">
-              <strong className="text-lg">{a.doctor.specialty}</strong>
+              <strong className="text-lg text-ink">{a.doctor.specialty}</strong>
               <span className={`text-xs font-semibold px-3 py-1 rounded-full ${statusInfo[a.status].style}`}>
                 {statusInfo[a.status].label}
               </span>
             </div>
-            <p className="text-slate-600">
+            <p className="text-ink-soft">
               {a.doctor.fullName} · {formatDate(a.scheduledAt)} · {a.durationMinutes} min
             </p>
-            <p className="text-slate-500 text-sm mb-3">Código {a.appointmentCode}</p>
+            <p className="mb-3 text-sm text-ink-soft">Código {a.appointmentCode}</p>
             <div className="flex items-center justify-between">
-              <strong>
+              <strong className="text-ink">
                 {a.consultationFee.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </strong>
               <span className={`text-xs font-semibold px-3 py-1 rounded-full ${paymentInfo[a.paymentStatus].style}`}>
@@ -127,14 +129,14 @@ async function handleReschedule(id: string) {
                       setReschedulingId(reschedulingId === a.id ? null : a.id)
                       setNewDate('')
                     }}
-                    className="h-11 px-4 rounded-xl border border-brand text-brand font-semibold"
+                    className="h-12 rounded-xl border border-brand px-6 font-semibold text-brand transition-colors hover:bg-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
                     Remarcar
                   </button>
                   <button
                     onClick={() => handleCancel(a.id)}
                     disabled={cancellingId === a.id}
-                    className="h-11 px-4 rounded-xl border border-red-300 text-red-700 font-semibold disabled:opacity-60"
+                    className="h-12 rounded-xl border border-red-300 px-6 font-semibold text-red-700 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 disabled:opacity-60"
                   >
                     {cancellingId === a.id ? 'Cancelando...' : 'Cancelar consulta'}
                   </button>
@@ -146,11 +148,11 @@ async function handleReschedule(id: string) {
                       type="datetime-local"
                       value={newDate}
                       onChange={(e) => setNewDate(e.target.value)}
-                      className="h-12 rounded-xl border border-slate-300 px-4 bg-white"
+                      className="h-12 rounded-xl border border-slate-300 bg-white px-4 focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                     <button
                       onClick={() => handleReschedule(a.id)}
-                      className="h-12 px-5 rounded-xl bg-brand text-white font-semibold"
+                      className="h-12 rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     >
                       Confirmar nova data
                     </button>
@@ -160,24 +162,24 @@ async function handleReschedule(id: string) {
             )}
 
 
-          </article>
+          </Card>
         ))}
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-6">
+        <div className="flex items-center justify-between gap-3">
           <button
             onClick={() => setPage(page - 1)}
             disabled={page === 0}
-            className="h-11 px-4 rounded-xl border border-slate-300 bg-white font-semibold disabled:opacity-40"
+            className="h-12 rounded-xl border border-brand px-4 font-semibold text-brand transition-colors hover:bg-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-40"
           >
             Anterior
           </button>
-          <span className="text-slate-600">Página {page + 1} de {totalPages}</span>
+          <span className="text-ink-soft">Página {page + 1} de {totalPages}</span>
           <button
             onClick={() => setPage(page + 1)}
             disabled={page + 1 >= totalPages}
-            className="h-11 px-4 rounded-xl border border-slate-300 bg-white font-semibold disabled:opacity-40"
+            className="h-12 rounded-xl border border-brand px-4 font-semibold text-brand transition-colors hover:bg-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-40"
           >
             Próxima
           </button>

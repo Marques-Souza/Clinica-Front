@@ -2,6 +2,7 @@ import {useState, type FormEvent} from 'react'
 import api from '../services/api'
 import { Link, useNavigate } from 'react-router-dom'
 import { getPerfil } from '../services/auth'
+import Card from '../components/Card'
 
 function Login(){
   const [email, setEmail] = useState('')
@@ -16,19 +17,24 @@ function Login(){
     setError('')
     setLoading(true)
 
-    try{
+   try{
       const response = await api.post('/auth', {email, password})
       localStorage.setItem('token', response.data.token)
-      if (getPerfil()?.includes('USER')) {
-  try {
-    await api.get('/clients/me')
-    navigate('/home')
-  } catch {
-    navigate('/perfil/completar')
-  }
-} else {
-  navigate('/home')
-}
+
+      const perfil = getPerfil()
+
+      if (perfil?.includes('USER')) {
+        try {
+          await api.get('/clients/me')
+          navigate('/home')
+        } catch {
+          navigate('/perfil/completar')
+        }
+      } else if (perfil?.includes('DOCTOR')) {
+        navigate('/medico/perfil')
+      } else {
+        navigate('/home')
+      }
 
     }catch{
       setError('E-mail ou senha inválidos')
@@ -39,7 +45,7 @@ function Login(){
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow p-8">
+      <Card className="w-full max-w-sm">
         <div className="flex items-center gap-2 mb-6">
         <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white text-2xl font-bold">
           +
@@ -50,46 +56,46 @@ function Login(){
       </div>
     
 
-    <h1 className="text-3xl font-bold mb-1">Entrar</h1>
-    <p className="text-slate-600 mb-6">Acesse sua conta para agendar consultas.</p>
+    <h1 className="mb-1 text-3xl font-bold text-ink">Entrar</h1>
+    <p className="mb-6 text-ink-soft">Acesse sua conta para agendar consultas.</p>
 
     <form onSubmit={handlerSubmit}>
-    <label htmlFor="email" className="block text-sm font-semibold mb-1">E-mail</label>
+    <label htmlFor="email" className="mb-1 block text-sm font-semibold text-ink">E-mail</label>
     <input
       id="email"
       type="email"
       value={email}
       onChange={(e) => setEmail(e.target.value)}
       placeholder="Digite seu e-mail"
-      className="w-full h-12 rounded-xl border border-slate-300 px-4 mb-4"/>
+      className="mb-4 h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent"/>
 
-    <label htmlFor="password" className="block text-sm font-semibold mb-1">senha</label>
+    <label htmlFor="password" className="mb-1 block text-sm font-semibold text-ink">senha</label>
     <input
       id="password"
       type="password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}
       placeholder="Digite sua senha"
-      className="w-full h-12 rounded-xl border border-slate-300 px-4 mb-4"/>
+      className="mb-4 h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent"/>
 
     {error && (
-      <p className="text-red-500 text-sm mb-4">{error}</p>
+      <p className="mb-4 text-sm text-red-700">{error}</p>
     )}
 
     <button 
       type="submit"
       disabled={loading}
-      className="w-full h-12 rounded-xl bg-brand text-white font-semibold disabled:opacity-60 "
+      className="h-12 w-full rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
     >
       {loading ? 'Entrando...' : 'Entrar'}
     </button>
     </form>
 
-    <p className="text-center text-slate-500 mt-6">
+    <p className="mt-6 text-center text-ink-soft">
       Ainda não tem conta?{' '}
       <Link to="/register" className="text-brand font-semibold">Criar conta</Link>
     </p>
-  </div>
+      </Card>
   </div>
   )
 }

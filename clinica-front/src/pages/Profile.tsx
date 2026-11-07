@@ -1,5 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import api from '../services/api'
+import PageHeader from '../components/PageHeader'
+import Card from '../components/Card'
+import { formatCep, formatCpf, formatPhone } from '../services/format'
 
 type Client = {
   fullName: string
@@ -63,73 +66,97 @@ function Profile() {
     }
   }
 
-  if (loading) return <p className="text-slate-600">Carregando...</p>
-  if (!client) return <p className="text-red-600">{error}</p>
+  if (loading) {
+    return (
+      <div className="max-w-3xl space-y-6">
+        <PageHeader eyebrow="Conta" title={client?.fullName ?? 'Meu perfil'} />
+        <Card><p className="text-ink-soft">Carregando...</p></Card>
+      </div>
+    )
+  }
+  if (!client) {
+    return (
+      <div className="max-w-3xl space-y-6">
+        <PageHeader eyebrow="Conta" title="Meu perfil" />
+        <Card><p role="alert" className="text-red-700">{error}</p></Card>
+      </div>
+    )
+  }
 
-  const input = 'w-full h-12 rounded-xl border border-slate-300 px-4 mb-4 bg-white'
-  const label = 'block text-sm font-semibold mb-1'
+  const input = 'h-12 w-full rounded-xl border border-slate-300 bg-white px-4 focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent'
+  const label = 'mb-1 block text-sm font-semibold text-ink'
 
   return (
-    <div className="max-w-xl">
-      <h1 className="text-3xl font-bold mb-6">Meu perfil</h1>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader eyebrow="Conta" title={client.fullName} />
 
       {!editing ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+        <Card>
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><dt className="text-sm text-slate-500">Nome</dt><dd className="font-semibold">{client.fullName}</dd></div>
-            <div><dt className="text-sm text-slate-500">CPF</dt><dd className="font-semibold">{client.cpf}</dd></div>
-            <div><dt className="text-sm text-slate-500">E-mail</dt><dd className="font-semibold">{client.email}</dd></div>
-            <div><dt className="text-sm text-slate-500">Telefone</dt><dd className="font-semibold">{client.phone}</dd></div>
+            <div><dt className="text-sm text-ink-soft">Nome</dt><dd className="font-semibold text-ink">{client.fullName}</dd></div>
+            <div><dt className="text-sm text-ink-soft">CPF</dt><dd className="font-semibold text-ink">{formatCpf(client.cpf)}</dd></div>
+            <div><dt className="text-sm text-ink-soft">E-mail</dt><dd className="font-semibold text-ink">{client.email}</dd></div>
+            <div><dt className="text-sm text-ink-soft">Telefone</dt><dd className="font-semibold text-ink">{formatPhone(client.phone)}</dd></div>
             <div className="sm:col-span-2">
-              <dt className="text-sm text-slate-500">Endereço</dt>
-              <dd className="font-semibold">
+              <dt className="text-sm text-ink-soft">Endereço</dt>
+              <dd className="font-semibold text-ink">
                 {client.street}, {client.number} · {client.neighborhood}
                 <br />
-                {client.city} - {client.state} · CEP {client.cep}
+                {client.city} - {client.state} · CEP {formatCep(client.cep)}
               </dd>
             </div>
           </dl>
-          {error && <p className="text-red-600 text-sm mt-4">{error}</p>}
+          {error && <p role="alert" className="mt-4 text-sm text-red-700">{error}</p>}
           <button
             onClick={startEditing}
-            className="mt-6 h-12 px-6 rounded-xl bg-brand text-white font-semibold"
+            className="mt-6 h-12 rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
           >
             Editar
           </button>
-        </div>
+        </Card>
       ) : (
-        <form onSubmit={handleSave} className="bg-white rounded-2xl border border-slate-200 p-6">
-          <label htmlFor="fullName" className={label}>Nome completo</label>
-          <input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} maxLength={150} className={input} />
+        <Card>
+          <form onSubmit={handleSave} className="space-y-4">
+          <div>
+            <label htmlFor="fullName" className={label}>Nome completo</label>
+            <input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} maxLength={150} className={input} />
+          </div>
 
-          <label htmlFor="phone" className={label}>Telefone</label>
-          <input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={20} className={input} />
+          <div>
+            <label htmlFor="phone" className={label}>Telefone</label>
+            <input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={20} className={input} />
+          </div>
 
-          <label htmlFor="cep" className={label}>CEP</label>
-          <input id="cep" value={cep} onChange={(e) => setCep(e.target.value)} maxLength={9} className={input} />
+          <div>
+            <label htmlFor="cep" className={label}>CEP</label>
+            <input id="cep" value={cep} onChange={(e) => setCep(e.target.value)} maxLength={9} className={input} />
+          </div>
 
-          <label htmlFor="number" className={label}>Número</label>
-          <input id="number" value={number} onChange={(e) => setNumber(e.target.value)} maxLength={10} className={input} />
+          <div>
+            <label htmlFor="number" className={label}>Número</label>
+            <input id="number" value={number} onChange={(e) => setNumber(e.target.value)} maxLength={10} className={input} />
+          </div>
 
-          {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
 
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="submit"
               disabled={saving}
-              className="h-12 px-6 rounded-xl bg-brand text-white font-semibold disabled:opacity-60"
+              className="h-12 rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
             >
               {saving ? 'Salvando...' : 'Salvar'}
             </button>
             <button
               type="button"
               onClick={() => setEditing(false)}
-              className="h-12 px-6 rounded-xl border border-slate-300 font-semibold"
+              className="h-12 rounded-xl border border-brand px-6 font-semibold text-brand transition-colors hover:bg-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               Cancelar
             </button>
           </div>
-        </form>
+          </form>
+        </Card>
       )}
     </div>
   )

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import api from '../services/api'
+import PageHeader from '../components/PageHeader'
+import Card from '../components/Card'
 
 function Report() {
   const [loading, setLoading] = useState(false)
@@ -26,21 +28,23 @@ function Report() {
   }
 
   return (
-    <div className="max-w-xl">
-      <h1 className="text-3xl font-bold mb-2">Relatório</h1>
-      <p className="text-slate-600 mb-6">
-        Baixe um PDF com o histórico das suas consultas.
-      </p>
+    <div className="max-w-3xl space-y-6">
+      <PageHeader
+        eyebrow="Documentos"
+        title="Relatório"
+        subtitle="Baixe um PDF com o histórico das suas consultas."
+      />
 
-      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
-
-      <button
-        onClick={handleDownload}
-        disabled={loading}
-        className="h-12 px-6 rounded-xl bg-brand text-white font-semibold disabled:opacity-60"
-      >
-        {loading ? 'Gerando...' : 'Baixar relatório em PDF'}
-      </button>
+      <Card>
+        {error && <p role="alert" className="mb-4 text-sm text-red-700">{error}</p>}
+        <button
+          onClick={handleDownload}
+          disabled={loading}
+          className="h-12 w-full rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-60 sm:w-auto"
+        >
+          {loading ? 'Gerando...' : 'Baixar relatório em PDF'}
+        </button>
+      </Card>
     </div>
   )
 }
