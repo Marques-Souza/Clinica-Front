@@ -49,6 +49,7 @@ function Layout() {
       <NavLink to="/admin/medicos/novo" className={link}>Criar médico</NavLink>
       <NavLink to="/admin/especialidades" className={link}>Especialidades</NavLink>
       <NavLink to="/admin/relatorios" className={link}>Relatórios</NavLink>
+      <NavLink to="/admin/usuarios" className={link}>Usuários</NavLink>
     </>
   )}
         </nav>
