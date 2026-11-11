@@ -45,10 +45,10 @@ O frontend precisa saber onde encontrar a API. Crie o arquivo local `.env.develo
 Copy-Item .env.example .env.development
 ```
 
-Confira se `VITE_API_URL` aponta para o endereço da API. Para a configuração local padrão do backend, use:
+Confira se `VITE_API_URL` aponta para a URL da API e inclui o prefixo `/api/v1`. Para a configuração local padrão do backend, use:
 
 ```env
-VITE_API_URL=http://localhost:8081
+VITE_API_URL=http://localhost:8081/api/v1
 ```
 
 Com a API em execução, inicie o frontend:
@@ -72,7 +72,7 @@ O Vite normalmente disponibiliza a aplicação em [http://localhost:5173](http:/
 
 O frontend pode ser publicado em um serviço de hospedagem de sites estáticos. Configure o comando de build como `npm run build` e a pasta de publicação como `dist`.
 
-Defina `VITE_API_URL` nas variáveis do serviço de hospedagem com o endereço público da API. Essa variável é incorporada ao JavaScript durante o build, então precisa estar configurada antes de gerar a versão de produção. Depois, inclua a origem HTTPS do frontend em `CORS_ALLOWED_ORIGINS` no backend.
+Defina `VITE_API_URL` nas variáveis do serviço de hospedagem com o endereço público da API seguido de `/api/v1`. Essa variável é incorporada ao JavaScript durante o build, então precisa estar configurada antes de gerar a versão de produção. No serviço do backend, inclua em `CORS_ALLOWED_ORIGINS` a origem HTTPS exata do frontend, sem barra final (por exemplo, `https://clinica-pink-nu.vercel.app`).
 
 Variáveis com prefixo `VITE_` ficam visíveis no navegador. Use-as apenas para configurações públicas, como o endereço da API; nunca coloque senhas, tokens privados ou credenciais nelas.
 
