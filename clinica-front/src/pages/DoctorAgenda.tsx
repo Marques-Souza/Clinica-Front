@@ -4,7 +4,6 @@ import api from '../services/api'
 import PageHeader from '../components/PageHeader'
 import Card from '../components/Card'
 import { specialtyLabel } from '../services/specialties'
-import { firstTwoNames } from '../services/format'
 
 type Appointment = {
   id: string
@@ -28,26 +27,10 @@ function DoctorAgenda() {
   const [onlyUpcoming, setOnlyUpcoming] = useState(true)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [doctorName, setDoctorName] = useState('')
-  const [nameError, setNameError] = useState('')
 
   useEffect(() => {
     api
-      .get<{ fullName: string }>('/doctors/me')
-      .then(({ data }) => {
-        const name = firstTwoNames(data.fullName)
-        if (!name) {
-          setNameError('Não foi possível carregar seu nome.')
-          return
-        }
-        setDoctorName(name)
-      })
-      .catch(() => setNameError('Não foi possível carregar seu nome.'))
-
-    api
-      .get('/appointments/doctor/me', {
-        params: { page: 0, size: 50, sort: 'scheduledAt,asc' },
-      })
+      .get('/appointments', { params: { page: 0, size: 50, sort: 'scheduledAt,asc' } })
       .then((response) => setAppointments(response.data.content))
       .catch(() => setError('Não foi possível carregar sua agenda'))
       .finally(() => setLoading(false))
@@ -76,12 +59,7 @@ function DoctorAgenda() {
       <PageHeader
         eyebrow="Agenda"
         title="Minhas consultas"
-        subtitle={
-          nameError ||
-          (doctorName
-            ? `Bem-vindo, ${doctorName}! Consultas marcadas com você, por dia e horário.`
-            : 'Consultas marcadas com você, por dia e horário.')
-        }
+        subtitle="Consultas marcadas com você, por dia e horário."
       />
 
       <div className="flex gap-2">

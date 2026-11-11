@@ -21,7 +21,7 @@ function Layout() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-brand-dark border-b-4 border-accent">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Logo onDark />
           <button onClick={logout} className="h-11 px-2 sm:px-4 font-semibold text-white">
             Sair
@@ -29,10 +29,7 @@ function Layout() {
         </div>
 
         <nav className="max-w-5xl mx-auto px-4 sm:px-6 pb-3 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-          <NavLink to={isAdmin ? '/admin/dashboard' : '/home'} end className={link}>
-            {isAdmin ? 'Dashboard' : 'Início'}
-          </NavLink>
-
+          <NavLink to="/home" end className={link}>Início</NavLink>
           {isUser && (
             <>
               <NavLink to="/consultas/nova" className={link}>Agendar consulta</NavLink>
@@ -49,15 +46,11 @@ function Layout() {
 
   {isAdmin && (
     <>
-      <NavLink to="/admin/medicos" className={link}>Médicos</NavLink>
-      <NavLink to="/admin/consultas/buscar" className={link}>Buscar consulta</NavLink>
+      <NavLink to="/admin/medicos/novo" className={link}>Criar médico</NavLink>
       <NavLink to="/admin/especialidades" className={link}>Especialidades</NavLink>
       <NavLink to="/admin/relatorios" className={link}>Relatórios</NavLink>
       <NavLink to="/admin/usuarios" className={link}>Usuários</NavLink>
     </>
-  )}
-  {(isUser || isAdmin) && (
-    <NavLink to="/senha" className={link}>Alterar senha</NavLink>
   )}
         </nav>
       </header>

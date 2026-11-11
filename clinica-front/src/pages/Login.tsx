@@ -3,7 +3,6 @@ import api from '../services/api'
 import { Link, useNavigate } from 'react-router-dom'
 import { getPerfil } from '../services/auth'
 import Card from '../components/Card'
-import Logo from '../components/Logo'
 
 function Login(){
   const [email, setEmail] = useState('')
@@ -47,9 +46,15 @@ function Login(){
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <Card className="w-full max-w-sm">
-        <div className="-mx-6 -mt-6 mb-6 rounded-t-2xl border-b-4 border-accent bg-brand-dark px-5 py-3">
-          <Logo onDark />
+        <div className="flex items-center gap-2 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white text-2xl font-bold">
+          +
         </div>
+        <span className="text-xl font-bold">
+          Clínica
+        </span>
+      </div>
+    
 
     <h1 className="mb-1 text-3xl font-bold text-ink">Entrar</h1>
     <p className="mb-6 text-ink-soft">Acesse sua conta para agendar consultas.</p>
@@ -72,10 +77,6 @@ function Login(){
       onChange={(e) => setPassword(e.target.value)}
       placeholder="Digite sua senha"
       className="mb-4 h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent"/>
-
-    <p className="mb-4 text-right text-sm">
-      <Link to="/recuperar-senha" className="font-semibold text-brand hover:underline">Esqueceu a senha?</Link>
-    </p>
 
     {error && (
       <p className="mb-4 text-sm text-red-700">{error}</p>
