@@ -1,75 +1,92 @@
-# React + TypeScript + Vite
+# Clínica Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Uma interface web para aproximar pacientes, médicos e a equipe administrativa da clínica. A ideia é deixar as tarefas do dia a dia — como encontrar um horário e acompanhar consultas — mais simples e organizadas.
 
-Currently, two official plugins are available:
+Este repositório contém o frontend. Os dados, o login e as regras de acesso são atendidos pela API do projeto.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## O que você encontra por aqui
 
-## React Compiler
+- Cadastro, login e recuperação de senha.
+- Área do paciente para completar o perfil, consultar horários disponíveis, agendar e acompanhar consultas.
+- Prévia do valor da consulta durante o agendamento, conforme a configuração da especialidade.
+- Busca de consulta pelo código e geração de relatório em PDF.
+- Área do médico para consultar e atualizar os dados do perfil.
+- Área administrativa com dashboard e telas para gerenciar médicos, usuários, especialidades e relatórios.
+- Páginas protegidas conforme o perfil de acesso.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologias
 
-## Expanding the ESLint configuration
+- React 19 e TypeScript
+- Vite
+- React Router
+- Tailwind CSS
+- Axios
+- ESLint
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Requisitos
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 22.12 ou mais recente
+- npm
+- API da clínica em execução
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Começando
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Clone o repositório e instale as dependências:
 
+```powershell
+git clone https://github.com/Marques-Souza/Clinica-Front.git
+Set-Location Clinica-Front
+npm ci
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+O frontend precisa saber onde encontrar a API. Crie o arquivo local `.env.development` a partir do exemplo:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```powershell
+Copy-Item .env.example .env.development
 ```
+
+Confira se `VITE_API_URL` aponta para o endereço da API. Para a configuração local padrão do backend, use:
+
+```env
+VITE_API_URL=http://localhost:8081
+```
+
+Com a API em execução, inicie o frontend:
+
+```powershell
+npm run dev
+```
+
+O Vite normalmente disponibiliza a aplicação em [http://localhost:5173](http://localhost:5173). Para que as chamadas funcionem, o backend também deve permitir essa origem na configuração CORS.
+
+## Comandos úteis
+
+| Comando | Para que serve |
+|---|---|
+| `npm run dev` | Inicia o servidor de desenvolvimento |
+| `npm run lint` | Analisa o código com ESLint |
+| `npm run build` | Verifica os tipos TypeScript e gera a versão de produção |
+| `npm run preview` | Abre localmente a versão gerada em `dist` |
+
+## Publicação
+
+O frontend pode ser publicado em um serviço de hospedagem de sites estáticos. Configure o comando de build como `npm run build` e a pasta de publicação como `dist`.
+
+Defina `VITE_API_URL` nas variáveis do serviço de hospedagem com o endereço público da API. Essa variável é incorporada ao JavaScript durante o build, então precisa estar configurada antes de gerar a versão de produção. Depois, inclua a origem HTTPS do frontend em `CORS_ALLOWED_ORIGINS` no backend.
+
+Variáveis com prefixo `VITE_` ficam visíveis no navegador. Use-as apenas para configurações públicas, como o endereço da API; nunca coloque senhas, tokens privados ou credenciais nelas.
+
+## Organização do projeto
+
+```text
+src/
+  components/  elementos reutilizados da interface
+  pages/       páginas e fluxos da aplicação
+  services/    comunicação com a API e funções auxiliares
+  assets/      imagens e outros recursos usados pelo app
+public/        arquivos servidos diretamente pelo Vite
+```
+
+## Sobre o acesso
+
+O frontend mostra as áreas disponíveis para cada perfil para facilitar a navegação. A API continua sendo responsável por validar o login e autorizar cada operação; esconder uma tela no navegador não substitui essa validação no servidor.
