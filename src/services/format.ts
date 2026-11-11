@@ -2,6 +2,10 @@ function digits(value: string) {
   return value.replace(/\D/g, '')
 }
 
+export function firstTwoNames(value: string) {
+  return value.trim().split(/\s+/).filter(Boolean).slice(0, 2).join(' ')
+}
+
 export function formatCpf(value: string) {
   const raw = digits(value)
   if (raw.length !== 11) return value

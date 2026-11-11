@@ -4,6 +4,7 @@ import api from '../services/api'
 import PageHeader from '../components/PageHeader'
 import Card from '../components/Card'
 import { hasPerfil } from '../services/auth'
+import { firstTwoNames } from '../services/format'
 
 type Appointment = {
   id: string
@@ -19,16 +20,28 @@ function toDate(value: string) {
 }
 
 function Home() {
+  const isUser = hasPerfil('USER')
+  const isAdmin = hasPerfil('ADMIN')
   const [next, setNext] = useState<Appointment | null>(null)
-  const [loading, setLoading] = useState(true)
-
-
+  const [loading, setLoading] = useState(isUser)
+  const [greetingName, setGreetingName] = useState(isAdmin ? 'Administrador' : '')
+  const [nameError, setNameError] = useState('')
 
   useEffect(() => {
-    if (!hasPerfil('USER')) {
-  setLoading(false)
-  return
-}
+    if (!isUser) return
+
+    api
+      .get<{ fullName: string }>('/clients/me')
+      .then(({ data }) => {
+        const name = firstTwoNames(data.fullName)
+        if (!name) {
+          setNameError('Não foi possível carregar seu nome.')
+          return
+        }
+        setGreetingName(name)
+      })
+      .catch(() => setNameError('Não foi possível carregar seu nome.'))
+
     api
       .get('/appointments', { params: { page: 0, size: 50 } })
       .then((response) => {
@@ -39,21 +52,19 @@ function Home() {
       })
       .catch(() => setNext(null))
       .finally(() => setLoading(false))
-  }, [])
+  }, [isUser])
 
-  if (!hasPerfil('USER')) {
+  if (!isUser) {
   return (
     <div className="max-w-3xl space-y-6">
-      <PageHeader eyebrow="Início" title="Olá!" subtitle="Bem-vindo ao sistema." />
+      <PageHeader
+        eyebrow="Início"
+        title={greetingName ? `Olá, ${greetingName}!` : 'Olá!'}
+        subtitle={nameError || 'Bem-vindo ao sistema.'}
+      />
 
-      {hasPerfil('ADMIN') && (
+      {isAdmin && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Link
-            to="/admin/medicos/novo"
-            className="rounded-2xl border border-slate-200 bg-white p-5 font-semibold text-ink hover:border-brand hover:shadow-md transition"
-          >
-            Criar médico
-          </Link>
           <Link
             to="/admin/especialidades"
             className="rounded-2xl border border-slate-200 bg-white p-5 font-semibold text-ink hover:border-brand hover:shadow-md transition"
@@ -68,7 +79,11 @@ function Home() {
 
   return (
     <div className="max-w-3xl space-y-6">
-      <PageHeader eyebrow="Início" title="Olá!" subtitle="Bem-vindo de volta" />
+      <PageHeader
+        eyebrow="Início"
+        title={greetingName ? `Olá, ${greetingName}!` : 'Olá!'}
+        subtitle={nameError || 'Bem-vindo de volta'}
+      />
 
       <Card variant="brand" className="text-white">
         <p className="text-sm font-semibold tracking-wide">PRÓXIMA CONSULTA</p>
