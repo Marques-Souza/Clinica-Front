@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { isAxiosError } from 'axios'
 import api from '../services/api'
 import PageHeader from '../components/PageHeader'
 import Card from '../components/Card'
@@ -12,6 +13,11 @@ type Appointment = {
   consultationFee: number
   paymentStatus: 'PENDING' | 'PAID' | 'CANCELLED'
   status: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED'
+}
+
+type Availability = {
+  durationMinutes: number
+  availableSlots: string[]
 }
 
 const statusInfo = {
@@ -34,6 +40,13 @@ function formatDate(value: string) {
   })
 }
 
+function toDateInputValue(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 function MyAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [page, setPage] = useState(0)
@@ -42,7 +55,14 @@ function MyAppointments() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [reschedulingId, setReschedulingId] = useState<string | null>(null)
-  const [newDate, setNewDate] = useState('')
+  const [rescheduleDate, setRescheduleDate] = useState('')
+  const [selectedSlot, setSelectedSlot] = useState('')
+  const [availability, setAvailability] = useState<Availability | null>(null)
+  const [availabilityLoading, setAvailabilityLoading] = useState(false)
+  const [availabilityError, setAvailabilityError] = useState('')
+  const [availabilityVersion, setAvailabilityVersion] = useState(0)
+  const [rescheduleError, setRescheduleError] = useState('')
+  const [savingRescheduleId, setSavingRescheduleId] = useState<string | null>(null)
 
   async function handleCancel(id: string) {
   if (!window.confirm('Deseja realmente cancelar esta consulta?')) return
@@ -59,26 +79,63 @@ function MyAppointments() {
 }
 
 async function handleReschedule(id: string) {
-    if (!newDate) {
-      setError('Escolha a nova data e hora')
+    if (!rescheduleDate || !selectedSlot) {
+      setRescheduleError('Escolha uma data e um horário disponível')
       return
     }
-    setError('')
+    setSavingRescheduleId(id)
+    setRescheduleError('')
     try {
-      // "2026-11-10T14:30" -> "2026-11-10 14:30:00"
-      const scheduledAt = newDate.replace('T', ' ') + ':00'
+      const scheduledAt = `${rescheduleDate} ${selectedSlot}:00`
       const response = await api.put(`/appointments/${id}`, { scheduledAt })
       setAppointments((list) => list.map((a) => (a.id === id ? response.data : a)))
       setReschedulingId(null)
-      setNewDate('')
-    } catch {
-      setError('Não foi possível remarcar. A data precisa ser no futuro.')
+      setRescheduleDate('')
+      setSelectedSlot('')
+    } catch (err) {
+      if (isAxiosError(err) && err.response?.status === 409) {
+        setRescheduleError('Esse horário não está mais disponível. Escolha outro.')
+        setSelectedSlot('')
+        setAvailability(null)
+        setAvailabilityError('')
+        setAvailabilityLoading(true)
+        setAvailabilityVersion((current) => current + 1)
+      } else if (isAxiosError(err) && err.response?.status === 422) {
+        setRescheduleError('A nova data precisa estar no futuro.')
+      } else {
+        setRescheduleError('Não foi possível remarcar a consulta. Tente novamente.')
+      }
+    } finally {
+      setSavingRescheduleId(null)
     }
   }
 
   useEffect(() => {
-    setLoading(true)
-    setError('')
+    if (!reschedulingId || !rescheduleDate) return
+
+    const controller = new AbortController()
+
+    api
+      .get<Availability>(`/appointments/${reschedulingId}/available-slots`, {
+        params: { date: rescheduleDate },
+        signal: controller.signal,
+      })
+      .then(({ data }) => {
+        if (!controller.signal.aborted) setAvailability(data)
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setAvailabilityError('Não foi possível consultar os horários disponíveis.')
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setAvailabilityLoading(false)
+      })
+
+    return () => controller.abort()
+  }, [reschedulingId, rescheduleDate, availabilityVersion])
+
+  useEffect(() => {
     api
       .get('/appointments', { params: { page, size: 10 } })
       .then((response) => {
@@ -88,6 +145,12 @@ async function handleReschedule(id: string) {
       .catch(() => setError('Não foi possível carregar suas consultas'))
       .finally(() => setLoading(false))
   }, [page])
+
+  function goToPage(nextPage: number) {
+    setLoading(true)
+    setError('')
+    setPage(nextPage)
+  }
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -125,11 +188,19 @@ async function handleReschedule(id: string) {
               <div className="mt-4">
                 <div className="flex gap-2">
                   <button
+                    type="button"
+                    disabled={savingRescheduleId === a.id}
                     onClick={() => {
-                      setReschedulingId(reschedulingId === a.id ? null : a.id)
-                      setNewDate('')
+                      const shouldOpen = reschedulingId !== a.id
+                      setReschedulingId(shouldOpen ? a.id : null)
+                      setRescheduleDate('')
+                      setSelectedSlot('')
+                      setRescheduleError('')
+                      setAvailability(null)
+                      setAvailabilityError('')
+                      setAvailabilityLoading(false)
                     }}
-                    className="h-12 rounded-xl border border-brand px-6 font-semibold text-brand transition-colors hover:bg-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    className="h-12 rounded-xl border border-brand px-6 font-semibold text-brand transition-colors hover:bg-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
                   >
                     Remarcar
                   </button>
@@ -143,18 +214,73 @@ async function handleReschedule(id: string) {
                 </div>
 
                 {reschedulingId === a.id && (
-                  <div className="mt-3 flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="datetime-local"
-                      value={newDate}
-                      onChange={(e) => setNewDate(e.target.value)}
-                      className="h-12 rounded-xl border border-slate-300 bg-white px-4 focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent"
-                    />
+                  <div className="mt-3 space-y-3">
+                    <div>
+                      <label htmlFor={`reschedule-date-${a.id}`} className="mb-1 block text-sm font-semibold text-ink">
+                        Nova data
+                      </label>
+                      <input
+                        id={`reschedule-date-${a.id}`}
+                        type="date"
+                        value={rescheduleDate}
+                        min={toDateInputValue(new Date())}
+                        onChange={(event) => {
+                          const nextDate = event.target.value
+                          setRescheduleDate(nextDate)
+                          setSelectedSlot('')
+                          setRescheduleError('')
+                          setAvailability(null)
+                          setAvailabilityError('')
+                          setAvailabilityLoading(Boolean(reschedulingId && nextDate))
+                        }}
+                        className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 focus:border-brand focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
+                    {availabilityLoading && (
+                      <p role="status" className="text-sm text-ink-soft">Consultando horários disponíveis...</p>
+                    )}
+                    {availabilityError && <p role="alert" className="text-sm text-red-700">{availabilityError}</p>}
+                    {availability?.availableSlots.length === 0 && !availabilityLoading && (
+                      <p className="text-sm text-ink-soft">Não há horários disponíveis nessa data.</p>
+                    )}
+                    {availability && availability.availableSlots.length > 0 && (
+                      <fieldset>
+                        <legend className="mb-2 text-sm font-semibold text-ink">
+                          Horários disponíveis · {availability.durationMinutes} min
+                        </legend>
+                        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                          {availability.availableSlots.map((slot) => {
+                            const selected = selectedSlot === slot
+                            return (
+                              <button
+                                key={slot}
+                                type="button"
+                                aria-pressed={selected}
+                                onClick={() => {
+                                  setSelectedSlot(slot)
+                                  setRescheduleError('')
+                                }}
+                                className={`h-11 rounded-xl border font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                                  selected
+                                    ? 'border-brand bg-brand text-white'
+                                    : 'border-slate-300 bg-white text-ink hover:border-brand'
+                                }`}
+                              >
+                                {slot}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </fieldset>
+                    )}
+                    {rescheduleError && <p role="alert" className="text-sm text-red-700">{rescheduleError}</p>}
                     <button
+                      type="button"
                       onClick={() => handleReschedule(a.id)}
-                      className="h-12 rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      disabled={!rescheduleDate || !selectedSlot || savingRescheduleId === a.id}
+                      className="h-12 rounded-xl bg-brand px-6 font-semibold text-white transition-colors hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
                     >
-                      Confirmar nova data
+                      {savingRescheduleId === a.id ? 'Remarcando...' : 'Confirmar novo horário'}
                     </button>
                   </div>
                 )}
@@ -169,7 +295,7 @@ async function handleReschedule(id: string) {
       {totalPages > 1 && (
         <div className="flex items-center justify-between gap-3">
           <button
-            onClick={() => setPage(page - 1)}
+            onClick={() => goToPage(page - 1)}
             disabled={page === 0}
             className="h-12 rounded-xl border border-brand px-4 font-semibold text-brand transition-colors hover:bg-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-40"
           >
@@ -177,7 +303,7 @@ async function handleReschedule(id: string) {
           </button>
           <span className="text-ink-soft">Página {page + 1} de {totalPages}</span>
           <button
-            onClick={() => setPage(page + 1)}
+            onClick={() => goToPage(page + 1)}
             disabled={page + 1 >= totalPages}
             className="h-12 rounded-xl border border-brand px-4 font-semibold text-brand transition-colors hover:bg-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-40"
           >

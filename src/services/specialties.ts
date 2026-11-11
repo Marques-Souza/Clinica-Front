@@ -1,10 +1,10 @@
 export const specialties = [
-  { value: 'CARDIOLOGY', label: 'Cardiologia' },
-  { value: 'PEDIATRICS', label: 'Pediatria' },
-  { value: 'ORTHOPEDICS', label: 'Ortopedia' },
-  { value: 'DERMATOLOGY', label: 'Dermatologia' },
-  { value: 'OPHTHALMOLOGY', label: 'Oftalmologia' },
-  { value: 'GYNECOLOGY', label: 'Ginecologia' },
+  { value: 'CARDIOLOGY', label: 'CARDIOLOGIA' },
+  { value: 'PEDIATRICS', label: 'PEDIATRIA' },
+  { value: 'ORTHOPEDICS', label: 'ORTOPEDIA' },
+  { value: 'DERMATOLOGY', label: 'DERMATOLOGIA' },
+  { value: 'OPHTHALMOLOGY', label: 'OFTALMOLOGIA' },
+  { value: 'GYNECOLOGY', label: 'GINECOLOGIA' },
 ]
 
 export function specialtyLabel(value: string) {
